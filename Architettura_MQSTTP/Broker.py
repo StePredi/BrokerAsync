@@ -1,5 +1,14 @@
 import asyncio
+import logging
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="[%(asctime)s] [%(name)s] %(levelname)s: %(message)s",
+    datefmt="%H:%M:%S",
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
 
 class Broker:
     def __init__(self, host="127.0.0.1", porta=9999):
@@ -16,14 +25,14 @@ class Broker:
     async def gestisci_client(self, reader, writer):
         ip, porta = writer.get_extra_info("peername")[:2]
         nome = f"{ip}:{porta}"
-        print(nome, "connesso")
-
+        logger = logging.getLogger(nome)
+        logger.info(f"Instaurata la connessione")
         try:
             while True:
                 dati = await reader.readline()
                 if not dati:                      # il client ha chiuso
                     break
-                print(nome, "->", dati.decode().strip())
+
         except ConnectionError:                   # il client è caduto all'improvviso
             pass
         finally:
