@@ -1,6 +1,6 @@
 import re
 
-SEP = "|"
+SEP = ":"
 FINE = "\n"
 
 #Regex
