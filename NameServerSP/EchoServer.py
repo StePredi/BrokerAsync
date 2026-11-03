@@ -17,11 +17,9 @@ async def gestisci_client(reader, writer):
             dati = await reader.readline()
             if not dati:
                 break
-
             try:
                 cmd = json.loads(dati)
             except (json.JSONDecodeError, UnicodeDecodeError):
-
                 res = {"status": "error", "message" : "Errore di decodifica"}
             else:
                 if not isinstance(cmd, dict):
