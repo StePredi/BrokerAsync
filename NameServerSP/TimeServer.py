@@ -55,3 +55,13 @@ async def avvia_server(socket = (HOST, PORT)):
             await server.serve_forever()
     except KeyboardInterrupt:
         server_log.info("Chiusura server")
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(name)s] %(message)s",
+    )
+    try:
+        asyncio.run(avvia_server())
+    except KeyboardInterrupt:
+        print("\nServer chiusi")
