@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import json
+from datetime import datetime
+
 
 HOST = "127.0.0.1"
 PORT = 6001
@@ -24,12 +26,11 @@ async def gesticsci_client(reader, writer):
             else:
                 if not isinstance(cmd, dict):
                     res = {"status": "error", "message" : "formato dati errato"}
-                elif cmd.get("cmd") != "echo":
+                elif cmd.get("cmd") != "time":
                     res = {"status": "error", "message" : "comando inesistente"}
-                elif "text" not in cmd:
-                    res = {"status": "error", "message" : "testo mancante"}
                 else:
-                    res = {"status": "ok", "text" : cmd["text"]}
+                    ora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    res = {"status": "ok", "time" : ora}
 
             writer.write((json.dumps(res) + "\n").encode())
             await writer.drain()
@@ -44,3 +45,13 @@ async def gesticsci_client(reader, writer):
         writer.close()
         await writer.wait_closed()
         logger.info("Connessione chiusa")
+
+async def avvia_server(socket = (HOST, PORT)):
+    server_log = logging.getLogger("Time_Server")
+    try:
+        server = await asyncio.start_server(gesticsci_client, socket[0], socket[1])
+        server_log.info(f"Server in ascolto: {socket}")
+        async with server:
+            await server.serve_forever()
+    except KeyboardInterrupt:
+        server_log.info("Chiusura server")
